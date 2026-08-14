@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>看山万象档案馆</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="machine-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <h1>看山万象档案馆</h1>
+        <span class="subtitle">跟着刘看山，走进一场知识冒险</span>
+      </div>
+      <div class="top-actions">
+        <button class="text-button" id="openHelp">玩法</button>
+        <button class="text-button" id="openCollection">万象档案 <span id="collectionCount">0/24</span></button>
+        <button class="text-button" id="exportSave">导出存档</button>
+        <label class="text-button file-button">导入存档<input id="importSave" type="file" accept="application/json"></label>
+      </div>
+    </header>
+
+    <main class="game-grid" id="gameGrid">
+      <aside class="panel status-panel">
+        <div class="panel-heading"><span>本局状态</span><small id="roleName">未选择</small></div>
+        <div class="portrait" id="portrait"><span>?</span></div>
+        <p class="role-skill" id="roleSkill">先选一个职业，再开始游戏。</p>
+
+        <div class="meter-block">
+          <div class="meter-label"><span>生命</span><strong id="lifeText">4 / 4</strong></div>
+          <div class="life-pips" id="lifePips"></div>
+        </div>
+        <div class="stat-ledger">
+          <div><span>连胜</span><strong id="streak">0</strong></div>
+          <div><span>金币</span><strong id="coins">0</strong></div>
+          <div><span>正确率</span><strong id="accuracy">—</strong></div>
+          <div class="stat-help" tabindex="0" data-help="答对尚未点亮的领域，就会点亮它；答错时全部熄灭。"><span>已点亮领域</span><strong id="chain">0 / 6</strong></div>
+        </div>
+        <div class="chain-track" id="chainTrack" aria-label="连续答对的不同领域"></div>
+
+        <div class="panel-heading compact"><span>本局记录</span><small>实时</small></div>
+        <dl class="run-record">
+          <div><dt>冒险答对</dt><dd id="riskWins">0</dd></div>
+          <div><dt>最高连胜</dt><dd id="maxStreak">0</dd></div>
+          <div class="record-help" tabindex="0" data-help="本局所有奇物累计生效的次数。"><dt>奇物生效</dt><dd id="bridgeTriggers">0</dd></div>
+          <div><dt>已用提示</dt><dd id="hintsUsed">0</dd></div>
+        </dl>
+      </aside>
+
+      <section class="play-stage">
+        <div class="journey-header">
+          <div>
+            <span class="eyebrow">答题进度</span>
+            <strong id="nodeLabel">尚未开始</strong>
+          </div>
+          <div class="journey-track" id="journeyTrack"></div>
+          <button class="danger-button" id="abandonRun" hidden>放弃本局</button>
+        </div>
+        <div class="stage-body" id="stageBody"></div>
+        <aside class="guide-dock" id="guideDock" aria-live="polite">
+          <div class="tern-sprite tern-welcome" id="guideSprite" aria-hidden="true"></div>
+          <div class="guide-bubble" id="guideBubble">
+            <strong>燕鸥小姐</strong>
+            <p id="guideText">先选一个职业。每个职业都有一项不同的能力。</p>
+          </div>
+          <button class="guide-toggle" id="guideToggle" type="button" aria-controls="guideBubble" aria-expanded="true" aria-label="收起燕鸥小姐的话">−</button>
+        </aside>
+      </section>
+
+      <aside class="panel inventory-panel">
+        <div class="panel-heading"><span>奇物架</span><span class="panel-heading-actions"><button class="context-help" id="relicHelp" type="button" aria-label="查看奇物规则">?</button><small><span id="relicCount">0</span> / 5</small></span></div>
+        <div class="relic-rack" id="relicRack"></div>
+        <div class="energy-spine" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+        <div class="panel-heading compact"><span>道具</span><small>点击使用</small></div>
+        <div class="item-belt" id="itemBelt"></div>
+
+        <div class="panel-heading compact"><span>效果记录</span><button class="clear-log" id="clearLog">清空</button></div>
+        <div class="trigger-log" id="triggerLog" aria-live="polite"></div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="modal"><div class="modal-card" id="modalContent"></div></dialog>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
