@@ -519,7 +519,7 @@ function offerRelics() {
 function offerItemReward() {
   const offers = sample(Object.keys(ITEMS), 3);
   openModal(`<div class="modal-head"><div><span class="eyebrow">旅行者奖励</span><h2>选择一个道具</h2></div></div>
-    <div class="pick-grid">${offers.map(id => `<button class="pick-card" data-item-reward="${id}"><span class="glyph">${ITEMS[id].name[0]}</span><h3>${ITEMS[id].name}</h3><p>${ITEMS[id].desc}</p></button>`).join("")}</div>`);
+    <div class="pick-grid">${offers.map(id => `<button class="pick-card item-reward-card" data-item-reward="${id}">${itemArtMarkup(id, "card")}<h3>${ITEMS[id].name}</h3><p>${ITEMS[id].desc}</p></button>`).join("")}</div>`);
   $$("[data-item-reward]").forEach(btn => btn.onclick = () => { const id = btn.dataset.itemReward; addItem(id); log(`旅行者从冒险路线带回「${ITEMS[id].name}」。`); closeModal(); continuePending(); });
   setGuide("relic", "这是旅行者的额外奖励。三件道具选一件。" );
 }
@@ -662,7 +662,7 @@ function endingScreenMarkup(won, ending, scores, preview = false) {
   const record = preview ? "总评级：A · 正确 12/15 · 最高连胜 8 · 冒险成功 2" : `总评级：${grade(scores)} · 正确 ${state.correct}/${state.answered} · 最高连胜 ${state.maxStreak} · 冒险成功 ${state.riskWins}`;
   const rank = ENDING_RANKS[ending.rank] || ENDING_RANKS.basic;
   return `<div class="ending-screen ending-family-${ending.family}${preview ? " ending-screen-preview" : ""}">
-    <div class="ending-hero"><div class="ending-seal" aria-hidden="true">${won ? endingGlyph(ending) : "未"}</div><div class="ending-copy"><span class="eyebrow">${won ? `${rank.label} · 成功完成15道题` : "本局结束"}</span><h2>${won ? ending.name : "未完成的档案"}</h2><p>${won ? ending.desc : "生命归零，本局结束。失败不会解锁结局，但本次答题和装备记录仍会显示在结算中。"}</p></div></div>
+    <div class="ending-hero"><div class="ending-seal" aria-hidden="true">${won ? endingArtMarkup(ending, "hero") : "<span>未</span>"}</div><div class="ending-copy"><span class="eyebrow">${won ? `${rank.label} · 成功完成15道题` : "本局结束"}</span><h2>${won ? ending.name : "未完成的档案"}</h2><p>${won ? ending.desc : "生命归零，本局结束。失败不会解锁结局，但本次答题和装备记录仍会显示在结算中。"}</p></div></div>
     <div class="score-grid">${Object.entries(scores).map(([key, value]) => `<div><span>${key}</span><strong>${value}</strong></div>`).join("")}</div>
     <div class="ending-record"><span>${record}</span>${won ? `<b>${rank.label}</b>` : "<b>失败记录</b>"}</div><${actionTag} class="primary-button"${preview ? "" : ` id="newRun"`}>开始新一局</${actionTag}></div>`;
 }
@@ -723,6 +723,13 @@ function endingContext() {
 
 function endingById(id) { return ENDINGS.find(ending => ending.id === id) || ENDINGS[0]; }
 function endingGlyph(ending) { return ({ streak: "算", chain: "图", risk: "险", shop: "备", item: "具", error: "订" })[ending.family] || "档"; }
+function endingArtMarkup(ending, variant = "hero") {
+  const family = ending && ending.family ? ending.family : "streak";
+  return `<span class="ending-art ending-art-${variant}"><img src="assets/endings/${family}.png" alt="" loading="lazy"></span>`;
+}
+function itemArtMarkup(id, variant = "belt") {
+  return `<span class="item-art item-art-${variant}"><img src="assets/items/${id}.png" alt="" loading="lazy"></span>`;
+}
 
 function calculateScores() {
   const accuracy = state.answered ? state.correct/state.answered : 0;
@@ -770,7 +777,7 @@ function renderSidebars() {
     const owned = state.relics[i]; if (!owned) return `<div class="relic-slot empty"><span>${String(i+1).padStart(2,"0")}</span><small>等待奇物</small></div>`;
     const r = relicById(owned.id); return `<div class="relic-slot ${relicThemeClass(r)}" data-relic="${r.id}">${relicArtMarkup(r, "rack")}<span class="relic-slot-copy"><span class="relic-slot-title"><b>${r.name}</b>${relicLevelMarkup(owned.level)}</span>${relicTagsMarkup(r)}<small>${relicEffect(r.id, owned.level)}</small></span></div>`;
   }).join("");
-  $("#itemBelt").innerHTML = Object.entries(ITEMS).map(([id,item])=>`<span class="item-wrap" data-help="${item.usage}"><button class="item" data-item="${id}" aria-label="${item.name}：${item.usage}剩余${state.items[id]||0}个" ${state.items[id]?"":"disabled"}>${item.name}<b>×${state.items[id]||0}</b></button></span>`).join("");
+  $("#itemBelt").innerHTML = Object.entries(ITEMS).map(([id,item])=>`<span class="item-wrap" data-help="${item.usage}"><button class="item" data-item="${id}" aria-label="${item.name}：${item.usage}剩余${state.items[id]||0}个" ${state.items[id]?"":"disabled"}>${itemArtMarkup(id)}<span class="item-copy"><span class="item-name">${item.name}</span><b>×${state.items[id]||0}</b></span></button></span>`).join("");
   $$("[data-item]").forEach(b=>b.onclick=()=>useItem(b.dataset.item)); renderLog();
 }
 
@@ -888,19 +895,31 @@ function closeHelp() {
 
 function showCollection() {
   const unlocked = getUnlockedEndings();
-  openModal(`<div class="modal-head collection-head"><div><span class="eyebrow">只用于收藏，不增加属性</span><h2>万象档案 ${unlocked.length}/${ENDINGS.length}</h2></div><button class="modal-close">×</button></div>
+  openModal(`<div class="collection-panel">
+    <div class="modal-head collection-head">
+      <div>
+        <span class="eyebrow">ARCHIVE LEDGER</span>
+        <h2>万象档案 <b>${unlocked.length}<i>/${ENDINGS.length}</i></b></h2>
+      </div>
+      <button class="modal-close" type="button">×</button>
+    </div>
     <div class="collection-summary">${Object.entries(ENDING_RANKS).map(([rank, info]) => {
       const total = ENDINGS.filter(ending => ending.rank === rank).length;
       const done = ENDINGS.filter(ending => ending.rank === rank && unlocked.includes(ending.id)).length;
-      return `<span><b>${done}/${total}</b>${info.label}</span>`;
+      const pct = total ? Math.round(done / total * 100) : 0;
+      return `<span class="collection-stat rank-${rank}"><small>${info.label}</small><b>${done}<i>/${total}</i></b><span class="collection-stat-bar" aria-hidden="true"><i style="width:${pct}%"></i></span></span>`;
     }).join("")}</div>
-    <div class="collection-grid">${ENDINGS.map(e => collectionTileMarkup(e, unlocked.includes(e.id))).join("")}</div>`); bindClose();
+    <div class="collection-grid">${ENDINGS.map((e, i) => collectionTileMarkup(e, unlocked.includes(e.id), i)).join("")}</div>
+  </div>`); bindClose();
 }
 
-function collectionTileMarkup(ending, unlocked) {
+function collectionTileMarkup(ending, unlocked, index = 0) {
   const rank = ENDING_RANKS[ending.rank] || ENDING_RANKS.basic;
   return `<article class="ending-tile ending-family-${ending.family} rank-${ending.rank} ${unlocked ? "unlocked" : "locked"}">
-    <div class="ending-tile-seal" aria-hidden="true">${unlocked ? endingGlyph(ending) : "?"}</div>
+    <div class="ending-tile-plate" aria-hidden="true">
+      <div class="ending-tile-seal">${endingArtMarkup(ending, "tile")}${unlocked ? "" : `<span class="ending-tile-lock">?</span>`}</div>
+      <small class="ending-tile-no">NO.${String(index + 1).padStart(2, "0")}</small>
+    </div>
     <div class="ending-tile-copy"><span>${rank.label}</span><h3>${unlocked ? ending.name : "未发现结局"}</h3><p>${unlocked ? ending.desc : ending.hint}</p></div>
   </article>`;
 }

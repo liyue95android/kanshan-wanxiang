@@ -39,6 +39,9 @@ python3 -m http.server 8080
 - `app.js`：游戏数据、状态机和规则实现
 - `GAME_DESIGN.md`：玩法与世界观设计文档
 - `assets/characters/`：刘看山职业图集与燕鸥小姐引导图集
+- `assets/relics/`：奇物插画
+- `assets/items/`：主动道具纯物件图标
+- `assets/endings/`：万象档案 6 个 family 插画
 
 ## 题库说明
 
