@@ -724,8 +724,8 @@ function endingContext() {
 function endingById(id) { return ENDINGS.find(ending => ending.id === id) || ENDINGS[0]; }
 function endingGlyph(ending) { return ({ streak: "算", chain: "图", risk: "险", shop: "备", item: "具", error: "订" })[ending.family] || "档"; }
 function endingArtMarkup(ending, variant = "hero") {
-  const family = ending && ending.family ? ending.family : "streak";
-  return `<span class="ending-art ending-art-${variant}"><img src="assets/endings/${family}.png" alt="" loading="lazy"></span>`;
+  const id = ending && ending.id ? ending.id : "streak";
+  return `<span class="ending-art ending-art-${variant}"><img src="assets/endings/${id}.png" alt="" loading="lazy"></span>`;
 }
 function itemArtMarkup(id, variant = "belt") {
   return `<span class="item-art item-art-${variant}"><img src="assets/items/${id}.png" alt="" loading="lazy"></span>`;
