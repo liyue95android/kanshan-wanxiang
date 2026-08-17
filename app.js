@@ -310,6 +310,8 @@ const $$ = s => [...document.querySelectorAll(s)];
 function init() {
   bindStaticEvents();
   if (localStorage.getItem("archive-guide-collapsed") === "1") { $("#guideDock").classList.add("collapsed"); $("#guideToggle").textContent = "+"; $("#guideToggle").setAttribute("aria-label", "展开燕鸥小姐的话"); $("#guideToggle").setAttribute("aria-expanded", "false"); }
+  restoreGuidePosition();
+  bindGuideDrag();
   const restored = restoreActiveRun();
   renderJourney(); renderSidebars();
   if (restored) {
@@ -947,7 +949,78 @@ function updateTimer() { const el=$("#timer"); if(el)el.textContent=`00:${String
 function stopTimer() { if(timerId)clearInterval(timerId); timerId=null; }
 function toast(text) { const el=$("#toast"); el.textContent=text; el.classList.add("show"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),1800); }
 function setGuide(pose, text) { const sprite=$("#guideSprite"), copy=$("#guideText"); if(!sprite||!copy)return; sprite.className=`tern-sprite tern-${pose}`; copy.textContent=text; }
-function toggleGuide() { const dock=$("#guideDock"), collapsed=!dock.classList.contains("collapsed"), toggle=$("#guideToggle"); dock.classList.toggle("collapsed",collapsed); toggle.textContent=collapsed?"+":"−"; toggle.setAttribute("aria-label",collapsed?"展开燕鸥小姐的话":"收起燕鸥小姐的话"); toggle.setAttribute("aria-expanded",String(!collapsed)); localStorage.setItem("archive-guide-collapsed",collapsed?"1":"0"); }
+function toggleGuide() { const dock=$("#guideDock"), collapsed=!dock.classList.contains("collapsed"), toggle=$("#guideToggle"); dock.classList.toggle("collapsed",collapsed); toggle.textContent=collapsed?"+":"−"; toggle.setAttribute("aria-label",collapsed?"展开燕鸥小姐的话":"收起燕鸥小姐的话"); toggle.setAttribute("aria-expanded",String(!collapsed)); localStorage.setItem("archive-guide-collapsed",collapsed?"1":"0"); if (dock.classList.contains("placed")) { const left=parseFloat(dock.style.left)||0, top=parseFloat(dock.style.top)||0; applyGuidePosition(left, top); } }
+function clampGuidePosition(left, top, dock, stage) {
+  const maxLeft = Math.max(0, stage.clientWidth - dock.offsetWidth);
+  const maxTop = Math.max(0, stage.clientHeight - dock.offsetHeight);
+  return { left: Math.min(Math.max(0, left), maxLeft), top: Math.min(Math.max(0, top), maxTop) };
+}
+function applyGuidePosition(left, top) {
+  const dock = $("#guideDock"), stage = dock.parentElement;
+  if (!dock || !stage) return;
+  const next = clampGuidePosition(left, top, dock, stage);
+  dock.classList.add("placed");
+  dock.style.left = next.left + "px";
+  dock.style.top = next.top + "px";
+  dock.style.right = "auto";
+  dock.style.bottom = "auto";
+  return next;
+}
+function restoreGuidePosition() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("archive-guide-position"));
+    if (!saved || typeof saved.left !== "number" || typeof saved.top !== "number" || !Number.isFinite(saved.left) || !Number.isFinite(saved.top)) return;
+    applyGuidePosition(saved.left, saved.top);
+  } catch {}
+}
+function saveGuidePosition(left, top) {
+  localStorage.setItem("archive-guide-position", JSON.stringify({ left, top }));
+}
+function bindGuideDrag() {
+  const dock = $("#guideDock"), stage = dock && dock.parentElement;
+  if (!dock || !stage) return;
+  let drag = null;
+
+  dock.addEventListener("pointerdown", e => {
+    if (e.button !== 0) return;
+    if (e.target.closest("#guideToggle")) return;
+    if (!e.target.closest("#guideSprite") && !e.target.closest("#guideBubble")) return;
+    const left = dock.offsetLeft, top = dock.offsetTop;
+    dock.classList.add("placed", "dragging");
+    dock.style.left = left + "px";
+    dock.style.top = top + "px";
+    dock.style.right = "auto";
+    dock.style.bottom = "auto";
+    drag = { startX: e.clientX, startY: e.clientY, origLeft: left, origTop: top };
+
+    const onMove = ev => {
+      if (!drag) return;
+      const next = clampGuidePosition(drag.origLeft + (ev.clientX - drag.startX), drag.origTop + (ev.clientY - drag.startY), dock, stage);
+      dock.style.left = next.left + "px";
+      dock.style.top = next.top + "px";
+    };
+    const onUp = () => {
+      if (!drag) return;
+      dock.classList.remove("dragging");
+      const next = applyGuidePosition(parseFloat(dock.style.left) || 0, parseFloat(dock.style.top) || 0);
+      saveGuidePosition(next.left, next.top);
+      drag = null;
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onUp);
+      document.removeEventListener("pointercancel", onUp);
+    };
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp);
+    document.addEventListener("pointercancel", onUp);
+    e.preventDefault();
+  });
+
+  window.addEventListener("resize", () => {
+    if (!dock.classList.contains("placed")) return;
+    const next = applyGuidePosition(parseFloat(dock.style.left) || 0, parseFloat(dock.style.top) || 0);
+    saveGuidePosition(next.left, next.top);
+  });
+}
 function resetRun() { stopTimer(); state=DEFAULT_STATE(); closeModal(); renderJourney(); renderSidebars(); renderWelcome(); localStorage.removeItem("archive-active-run"); }
 
 function getMeta() { try { return JSON.parse(localStorage.getItem("archive-meta")) || { endings: [] }; } catch { return { endings: [] }; } }
