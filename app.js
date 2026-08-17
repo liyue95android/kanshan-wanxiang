@@ -1168,7 +1168,7 @@ function finishRun(won) {
   if (won) unlockEnding(ending.id);
   $("#stageBody").innerHTML = endingScreenMarkup(won, ending, scores);
   $("#newRun").onclick = resetRun; renderAll(); updateCollectionCount();
-  setGuide("ending", won ? "通关了。这次的玩法已经收入万象档案。" : "这局结束了。换个职业或难度，再试一次。" );
+  setGuide("ending", won ? "通关了。这份结局已经收入万象档案。" : "这局结束了。换个职业或难度，再试一次。" );
 }
 
 function endingScreenMarkup(won, ending, scores, preview = false) {
