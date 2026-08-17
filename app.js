@@ -1043,7 +1043,7 @@ function relicThemeClass(relic) {
 }
 
 function relicArtMarkup(relic, variant = "card") {
-  return `<span class="relic-art relic-art-${variant}"><img src="assets/relics/${relic.id}.png" alt="" loading="lazy"></span>`;
+  return `<span class="relic-art relic-art-${variant}"><img src="assets/relics/${relic.id}.webp" alt="" loading="lazy"></span>`;
 }
 
 function relicTagsMarkup(relic) {
@@ -1239,10 +1239,10 @@ function endingById(id) { return ENDINGS.find(ending => ending.id === id) || END
 function endingGlyph(ending) { return ({ streak: "算", chain: "图", risk: "险", shop: "备", item: "具", error: "订" })[ending.family] || "档"; }
 function endingArtMarkup(ending, variant = "hero") {
   const id = ending && ending.id ? ending.id : "streak";
-  return `<span class="ending-art ending-art-${variant}"><img src="assets/endings/${id}.png" alt="" loading="lazy"></span>`;
+  return `<span class="ending-art ending-art-${variant}"><img src="assets/endings/${id}.webp" alt="" loading="lazy"></span>`;
 }
 function itemArtMarkup(id, variant = "belt") {
-  return `<span class="item-art item-art-${variant}"><img src="assets/items/${id}.png" alt="" loading="lazy"></span>`;
+  return `<span class="item-art item-art-${variant}"><img src="assets/items/${id}.webp" alt="" loading="lazy"></span>`;
 }
 
 function calculateScores() {

@@ -134,12 +134,12 @@ input:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }
 .role-card .role-art { grid-row: 1; width: 100%; height: 122px; pointer-events: none; transition: transform .18s; }
 .role-card:hover .role-art,.role-card.selected .role-art { transform: translateY(-3px) scale(1.035); }
 .liu-sprite { background-repeat: no-repeat; background-size: contain; background-position: center bottom; }
-.role-scholar { background-image: url("assets/characters/roles-v2/researcher.png"); }
-.role-adventurer { background-image: url("assets/characters/roles-v2/traveler.png"); }
-.role-merchant { background-image: url("assets/characters/roles-v2/banker.png"); }
-.role-mage { background-image: url("assets/characters/roles-v2/engineer.png"); }
-.role-detective { background-image: url("assets/characters/roles-v2/detective.png"); }
-.role-poet { background-image: url("assets/characters/roles-v2/collector.png"); }
+.role-scholar { background-image: url("assets/characters/roles-v2/researcher.webp"); }
+.role-adventurer { background-image: url("assets/characters/roles-v2/traveler.webp"); }
+.role-merchant { background-image: url("assets/characters/roles-v2/banker.webp"); }
+.role-mage { background-image: url("assets/characters/roles-v2/engineer.webp"); }
+.role-detective { background-image: url("assets/characters/roles-v2/detective.webp"); }
+.role-poet { background-image: url("assets/characters/roles-v2/collector.webp"); }
 .primary-button { margin-top: 18px; border: 1px solid var(--ink); background: var(--ink); color: white; padding: 12px 24px; cursor: pointer; box-shadow: 3px 3px 0 var(--orange); }
 .primary-button:disabled { opacity: .35; cursor: not-allowed; box-shadow: none; }
 
@@ -559,7 +559,7 @@ dialog::backdrop { background: rgba(22,33,38,.62); backdrop-filter: blur(3px); }
 .guide-dock { position: absolute; right: 14px; bottom: 13px; z-index: 6; width: 342px; min-height: 112px; pointer-events: none; transition: width .16s; }
 .guide-dock.placed { right: auto; bottom: auto; }
 .guide-dock.dragging { transition: none; user-select: none; }
-.tern-sprite { position: absolute; left: 0; bottom: 0; width: 112px; height: 112px; background-image: url("assets/characters/miss-tern-guide-v2.png"); background-repeat: no-repeat; background-size: 400% 200%; filter: drop-shadow(2px 3px 0 rgba(22,33,38,.16)); z-index: 2; transition: transform .18s; pointer-events: auto; cursor: grab; touch-action: none; }
+.tern-sprite { position: absolute; left: 0; bottom: 0; width: 112px; height: 112px; background-image: url("assets/characters/miss-tern-guide-v2.webp"); background-repeat: no-repeat; background-size: 400% 200%; filter: drop-shadow(2px 3px 0 rgba(22,33,38,.16)); z-index: 2; transition: transform .18s; pointer-events: auto; cursor: grab; touch-action: none; }
 .tern-welcome { background-position: 0 0; }
 .tern-explain { background-position: 33.333% 0; }
 .tern-route { background-position: 66.667% 0; }

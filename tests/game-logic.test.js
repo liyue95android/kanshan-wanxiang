@@ -79,12 +79,12 @@ assert.equal(eventState.flags.freeReroute, true, "六域回音应提供一次免
 
 for (const relic of game.RELICS) {
   assert.notEqual(game.relicEffect(relic.id, 1), game.relicEffect(relic.id, 2), `${relic.name}升级后说明必须变化`);
-  const artPath = path.join(__dirname, "..", "assets", "relics", `${relic.id}.png`);
+  const artPath = path.join(__dirname, "..", "assets", "relics", `${relic.id}.webp`);
   assert.ok(fs.existsSync(artPath), `${relic.name}应有独立插画`);
   assert.ok(fs.statSync(artPath).size < 250_000, `${relic.name}插画应适合网页加载`);
 }
-assert.equal(fs.readdirSync(path.join(__dirname, "..", "assets", "relics")).filter(file => file.endsWith(".png")).length, 18, "奇物插画数量应与奇物数量一致");
-assert.match(source, /assets\/relics\/\$\{relic\.id\}\.png/, "奇物组件应使用独立插画");
+assert.equal(fs.readdirSync(path.join(__dirname, "..", "assets", "relics")).filter(file => file.endsWith(".webp")).length, 18, "奇物插画数量应与奇物数量一致");
+assert.match(source, /assets\/relics\/\$\{relic\.id\}\.webp/, "奇物组件应使用独立插画");
 assert.match(source, /function relicCatalogMarkup\(\)/, "玩法说明应包含完整奇物目录");
 
 assert.equal(game.ENDINGS.length, 24, "万象档案应包含24个结局");
